@@ -11,11 +11,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class VertiSlides {
     private final DcMotorEx slideLeft;
     private final DcMotorEx slideRight;
-    public int targetPos;
+    private int targetPos;
     private final ElapsedTime timer = new ElapsedTime();
     private double integralSum = 0;
     private double lastError = 0;
-    final private Telemetry telemetry;
+    private final Telemetry telemetry;
 
     public VertiSlides(HardwareMap hardwareMap, Telemetry telemetry) {
         slideLeft = (DcMotorEx) hardwareMap.dcMotor.get("slideLeft");
@@ -30,9 +30,14 @@ public class VertiSlides {
     }
 
     public void update() {
-        if (Math.abs(slideRight.getCurrentPosition() - targetPos) > 30) {
-            slideLeft.setPower(returnPower());
-            slideRight.setPower(returnPower());
+        int tolerance = 30;
+        if ((slideRight.getCurrentPosition() - targetPos) < -tolerance) {
+            slideLeft.setPower(returnPowerUp());
+            slideRight.setPower(returnPowerUp());
+        }
+        else if ((slideRight.getCurrentPosition() - targetPos) > tolerance) {
+            slideLeft.setPower(returnPowerDown());
+            slideRight.setPower(returnPowerDown());
         }
         else {
             slideLeft.setPower(0);
@@ -40,7 +45,39 @@ public class VertiSlides {
         }
     }
 
-    private double returnPower(){
+    public void manualUp() {
+        slideLeft.setPower(0.7);
+        slideRight.setPower(0.7);
+    } //when running manual, the update method needs to be halted
+
+    public void manualDown() {
+        slideLeft.setPower(-0.5);
+        slideRight.setPower(-0.5);
+    }
+
+    public void setTargetPos(int targetPos) {
+        this.targetPos = targetPos;
+    }
+
+    public int getCurrentPos() {
+        return slideRight.getCurrentPosition();
+    }
+
+    private double returnPowerUp(){
+        double currentPos = slideRight.getCurrentPosition();
+        double error = targetPos - currentPos;
+        integralSum += error * timer.seconds();
+        double derivative = (error - lastError)/ timer.seconds();
+        lastError = error;
+        timer.reset();
+        telemetry.addData("error: ", error);
+        double kp = 0.0037;
+        double ki = 0.000000375;
+        double kd = 0.0;
+        return ((error * kp) + (derivative * kd) + (integralSum * ki));
+    }
+
+    private double returnPowerDown(){
         double currentPos = slideRight.getCurrentPosition();
         double error = targetPos - currentPos;
         integralSum += error * timer.seconds();

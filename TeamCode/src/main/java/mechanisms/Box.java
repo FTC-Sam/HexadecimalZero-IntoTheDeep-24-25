@@ -9,25 +9,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Box {
-    private HardwareMap hardwareMap;
-    private Telemetry telemetry;
-    private Gamepad gamepad1;
-    private CRServoImplEx spin;
-    private ServoImplEx hinge;
-    private ElapsedTime timer;
-    private double motorPow = 0.85;
-    private double armPos = 0.0;
-    private double bottomPos = 0.302;
-    private int posIndex = 0;
-    public Box(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1) {
-        this.hardwareMap = hardwareMap;
+    private final Telemetry telemetry;
+    private final CRServoImplEx spin;
+    private final ServoImplEx hinge;
+
+    public Box(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
-        this.gamepad1 = gamepad1;
 
         spin = (CRServoImplEx) hardwareMap.servo.get("spin");
         hinge = (ServoImplEx) hardwareMap.servo.get("hinge");
 
-        timer = new ElapsedTime();
     }
 
     public void rest() {
@@ -50,6 +41,7 @@ public class Box {
         spin.setPower(-0.5);
     }
 
-
-
+    public boolean isReset() {
+        return hinge.getPosition() == 0.6;
+    }
 }

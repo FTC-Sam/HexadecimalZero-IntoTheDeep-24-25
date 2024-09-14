@@ -1,29 +1,30 @@
 package mechanisms;
 
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class HoriSlides {
 
     private final ServoImplEx servoLeft;
     private final ServoImplEx servoRight;
-    public HoriSlides(HardwareMap hardwareMap) {
+    private final Telemetry telemetry;
+    public HoriSlides(HardwareMap hardwareMap, Telemetry telemetry) {
         servoLeft = (ServoImplEx) hardwareMap.servo.get("servoLeft");
         servoRight = (ServoImplEx) hardwareMap.servo.get("servoRight");
         servoRight.setDirection(Servo.Direction.REVERSE);
+        this.telemetry = telemetry;
     }
 
-    public void manual(boolean out, boolean in) {
-        if (in) {
-            servoLeft.setPosition(servoLeft.getPosition()-0.01);
-            servoRight.setPosition(servoRight.getPosition()-0.01);
-        }
-        else if (out) {
-            servoLeft.setPosition(servoLeft.getPosition()+0.01);
-            servoRight.setPosition(servoRight.getPosition()+0.01);
-        }
+    public void manualIn() {
+        servoLeft.setPosition(servoLeft.getPosition()-0.01);
+        servoRight.setPosition(servoRight.getPosition()-0.01);
+    }
+
+    public void manualOut() {
+        servoLeft.setPosition(servoLeft.getPosition()+0.01);
+        servoRight.setPosition(servoRight.getPosition()+0.01);
     }
 
     public void out() {
@@ -33,5 +34,9 @@ public class HoriSlides {
     public void in() {
         servoLeft.setPosition(0);
         servoRight.setPosition(0);
+    }
+
+    public boolean isReset() {
+        return servoLeft.getPosition() == 0;
     }
 }
