@@ -28,6 +28,8 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
     }
 
     CraneStates currentState = CraneStates.GROUND;
+    private final double horiThreshold = 0.1;
+    private final int vertiThreshold = 2000;
 
     public Crane(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
 
@@ -43,18 +45,29 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
     public void executeTeleOp() {
         switch (currentState) {
             case GROUND:
+                take();
+                manualHoriSlides();
+                resetHori();
+                break;
+
+            case EXTENSION:
+                //claw code
+
+
 
         }
         moveVertiSlides();
         if (!isVertiManual) vertiSlides.update();
+
     }
 
 
 
 
 
+    //extension related
 
-    public void setHeight() {
+    public void setHeight() { //gamepad2 up, left, right, down, x
         if(gamepad2.dpad_up){
             vertiSlides.setTargetPos(highBucket);
             currentState = CraneStates.EXTENSION;
@@ -76,7 +89,7 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
         }
     }
 
-    public void moveVertiSlides() {
+    public void moveVertiSlides() { //gamepad2 right bumper, left bumper
         if (gamepad2.right_bumper) {
             vertiSlides.manualUp();
             isVertiManual = true;
@@ -91,6 +104,46 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
         }
         if (horiSlides.isReset()) {
             setHeight();
+        }
+    }
+
+    public void armDeposit() {
+        //if (vertiSlides.getCurrentPos() > )
+    }
+
+
+
+
+
+
+    //---------------------------------------------------------------------------------------------
+    //ground related
+    public void manualHoriSlides() { //gamepad1 right bumper, left bumper
+        if (gamepad1.right_bumper) {
+            horiSlides.manualOut();
+        }
+        if (gamepad1.left_bumper) {
+            horiSlides.manualIn();
+        }
+    }
+    public void take() { //gamepad1 a, x
+        if ((horiSlides.getPosition() >= horiThreshold) && gamepad1.a) {
+            box.intake();
+        }
+        else if ((horiSlides.getPosition() >= horiThreshold) && gamepad1.x) {
+            box.outtake();
+        }
+        else if (gamepad1.a || gamepad1.x) {
+            horiSlides.setPosition(horiThreshold);
+        }
+        else {
+            box.rest();
+        }
+    }
+
+    public void resetHori() { //gamepad1 b
+        if (gamepad1.b) {
+            horiSlides.in();
         }
     }
 }

@@ -39,4 +39,13 @@ public class HoriSlides {
     public boolean isReset() {
         return servoLeft.getPosition() == 0;
     }
+
+    public double getPosition() {
+        return servoLeft.getPosition();
+    }
+
+    public void setPosition(double a) {
+        servoLeft.setPosition(a);
+        servoRight.setPosition(a);
+    }
 }
