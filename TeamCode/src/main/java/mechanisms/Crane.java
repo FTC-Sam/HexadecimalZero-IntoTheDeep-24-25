@@ -62,6 +62,7 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
         }
         manualVertiSlides();
         moveVertiSlides();
+        if (!isVertiManual) vertiSlides.update();
     }
 
 
