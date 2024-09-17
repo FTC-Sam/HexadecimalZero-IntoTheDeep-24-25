@@ -27,7 +27,8 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
         GROUND,
         CLIMB
     }
-    private ElapsedTime timer = new ElapsedTime();
+    private final ElapsedTime timer1 = new ElapsedTime();
+    private final ElapsedTime timer2 = new ElapsedTime();
 
     CraneStates currentState = CraneStates.GROUND;
     private final double horiThreshold = 0.1;
@@ -104,7 +105,7 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
             isVertiManual = false;
             vertiSlides.setTargetPos(vertiSlides.getCurrentPos());
         }
-        if (horiSlides.isReset() && timer.seconds() > 0.5) {
+        if (horiSlides.isReset() && timer1.seconds() > 0.5) {
             setHeight();
         }
     }
@@ -129,14 +130,16 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
         }
     }
     public void take() { //gamepad1 a, x
-        if ((horiSlides.getPosition() >= horiThreshold) && gamepad1.a) {
+        if ((horiSlides.getPosition() >= horiThreshold) && gamepad1.a && timer2.seconds() > 0.3) {
             box.intake();
         }
-        else if ((horiSlides.getPosition() >= horiThreshold) && gamepad1.x) {
+        else if ((horiSlides.getPosition() >= horiThreshold) && gamepad1.x && timer2.seconds() > 0.3) {
             box.outtake();
         }
         else if (gamepad1.a || gamepad1.x) {
             horiSlides.setPosition(horiThreshold);
+            timer2.reset();
+            timer2.startTime();
         }
         else {
             box.rest();
@@ -146,8 +149,8 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
     public void resetHori() { //gamepad1 b
         if (gamepad1.b) {
             horiSlides.in();
-            timer.reset();
-            timer.startTime();
+            timer1.reset();
+            timer1.startTime();
         }
     }
 }
