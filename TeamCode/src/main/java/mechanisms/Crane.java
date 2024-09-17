@@ -129,14 +129,14 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
             horiSlides.manualIn();
         }
     }
-    public void take() { //gamepad1 a, x
+    public void take() { //gamepad1 a, x, y
         if ((horiSlides.getPosition() >= horiThreshold) && gamepad1.a && timer2.seconds() > 0.3) {
             box.intake();
         }
         else if ((horiSlides.getPosition() >= horiThreshold) && gamepad1.x && timer2.seconds() > 0.3) {
             box.outtake();
         }
-        else if (gamepad1.a || gamepad1.x) {
+        else if (gamepad1.y) {
             horiSlides.setPosition(horiThreshold);
             timer2.reset();
             timer2.startTime();
