@@ -50,7 +50,7 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
             case GROUND:
                 boxTake();
                 manualHoriSlides();
-                moveHoriSlides();
+                presetHoriSlides();
                 break;
 
             case EXTENSION:
@@ -61,7 +61,7 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
 
         }
         manualVertiSlides();
-        moveVertiSlides();
+        presetVertiSlides();
         if (!isVertiManual) vertiSlides.update();
     }
 
@@ -71,7 +71,7 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
 
     //all mode related
 
-    public void moveVertiSlides() { //gamepad2 up, left, right, down, x
+    public void presetVertiSlides() { //gamepad2 up, left, right, down, x
         if (horiSlides.isReset() && timer1.seconds() > 0.5) {
             if (gamepad2.dpad_up) {
                 vertiSlides.setTargetPos(highBucket);
@@ -152,7 +152,7 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
         }
     }
 
-    public void moveHoriSlides() { //gamepad2 y, b
+    public void presetHoriSlides() { //gamepad2 y, b
         if (gamepad2.b) {
             horiSlides.in();
             timer1.reset();
