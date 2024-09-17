@@ -48,71 +48,58 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
     public void executeTeleOp() {
         switch (currentState) {
             case GROUND:
-                take();
+                boxTake();
                 manualHoriSlides();
                 moveHoriSlides();
                 break;
 
             case EXTENSION:
-                manualVertiSlides();
                 setArm();
                 //claw code
 
 
 
         }
-
-        if (horiSlides.isReset() && timer1.seconds() > 0.5) setHeight();
-        if (!isVertiManual) vertiSlides.update();
-
+        manualVertiSlides();
+        moveVertiSlides();
     }
 
 
 
 
 
-    //extension related
+    //all mode related
 
-    public void setHeight() { //gamepad2 up, left, right, down, x
-
-        if(gamepad2.dpad_up){
-            vertiSlides.setTargetPos(highBucket);
-            currentState = CraneStates.EXTENSION;
-        }
-        if(gamepad2.dpad_left) {
-            vertiSlides.setTargetPos(lowBucket);
-            currentState = CraneStates.EXTENSION;
-        }
-        if(gamepad2.dpad_right){
-            vertiSlides.setTargetPos(highBar);
-            currentState = CraneStates.EXTENSION;
-        }
-        if(gamepad2.x) {
-            vertiSlides.setTargetPos(lowBar);
-            currentState = CraneStates.EXTENSION;
-        }
-        if(gamepad2.dpad_down) {
-            vertiSlides.setTargetPos(down);
+    public void moveVertiSlides() { //gamepad2 up, left, right, down, x
+        if (horiSlides.isReset() && timer1.seconds() > 0.5) {
+            if (gamepad2.dpad_up) {
+                vertiSlides.setTargetPos(highBucket);
+                currentState = CraneStates.EXTENSION;
+            }
+            if (gamepad2.dpad_left) {
+                vertiSlides.setTargetPos(lowBucket);
+                currentState = CraneStates.EXTENSION;
+            }
+            if (gamepad2.dpad_right) {
+                vertiSlides.setTargetPos(highBar);
+                currentState = CraneStates.EXTENSION;
+            }
+            if (gamepad2.x) {
+                vertiSlides.setTargetPos(lowBar);
+                currentState = CraneStates.EXTENSION;
+            }
+            if (gamepad2.dpad_down) {
+                vertiSlides.setTargetPos(down);
+            }
         }
     }
 
-    public void setArm() {
-        if((vertiSlides.getTargetPos() == highBucket) || (vertiSlides.getTargetPos() == lowBucket)){
-            box.depositPosition();
-        }
-        if(vertiSlides.getTargetPos() == down) {
-            box.rest();
-        }
-    }
-
-
-
-    public void manualVertiSlides() { //gamepad2 right bumper, left bumper
-        if (gamepad2.right_bumper) {
+    public void manualVertiSlides() { //gamepad2 right_stick_y
+        if (-gamepad2.right_stick_y > 0.2) {
             vertiSlides.manualUp();
             isVertiManual = true;
         }
-        else if (gamepad2.left_bumper) {
+        else if (-gamepad2.right_stick_y < -0.2) {
             vertiSlides.manualDown();
             isVertiManual = true;
         }
@@ -123,22 +110,36 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
     }
 
 
+    //---------------------------------------------------------------------------------------------
+    //extension mode related
+
+    public void setArm() {
+        if((vertiSlides.getTargetPos() == highBucket) || (vertiSlides.getTargetPos() == lowBucket)){ //can add and here to threshold arm flipping
+            box.depositPosition();
+        }
+        if(vertiSlides.getTargetPos() == down) {
+            box.rest();
+        }
+    }
+
+
+
 
 
 
 
 
     //---------------------------------------------------------------------------------------------
-    //ground related
-    public void manualHoriSlides() { //gamepad2 right bumper, left bumper
-        if (gamepad2.right_bumper) {
+    //ground mode related
+    public void manualHoriSlides() { //gamepad2 left_stick_y
+        if (-gamepad2.left_stick_y > 0.2) {
             horiSlides.manualOut();
         }
-        if (gamepad2.left_bumper) {
+        if (-gamepad2.left_stick_y < -0.2) {
             horiSlides.manualIn();
         }
     }
-    public void take() { //gamepad1 a, x, y, b
+    public void boxTake() { //gamepad1 a, x
         if ((horiSlides.getPosition() >= horiThreshold) && gamepad1.a && timer2.seconds() > 0.3) {
             box.intake();
         }
@@ -150,13 +151,13 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
         }
     }
 
-    public void moveHoriSlides() {
-        if (gamepad1.b) {
+    public void moveHoriSlides() { //gamepad2 y, b
+        if (gamepad2.b) {
             horiSlides.in();
             timer1.reset();
             timer1.startTime();
         }
-        else if (gamepad1.y) {
+        else if (gamepad2.y) {
             horiSlides.setPosition(horiThreshold);
             timer2.reset();
             timer2.startTime();
