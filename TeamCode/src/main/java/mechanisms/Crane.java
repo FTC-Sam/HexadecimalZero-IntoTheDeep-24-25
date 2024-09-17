@@ -3,6 +3,7 @@ package mechanisms;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -26,6 +27,7 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
         GROUND,
         CLIMB
     }
+    private ElapsedTime timer = new ElapsedTime();
 
     CraneStates currentState = CraneStates.GROUND;
     private final double horiThreshold = 0.1;
@@ -102,7 +104,7 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
             isVertiManual = false;
             vertiSlides.setTargetPos(vertiSlides.getCurrentPos());
         }
-        if (horiSlides.isReset()) {
+        if (horiSlides.isReset() && timer.seconds() > 0.5) {
             setHeight();
         }
     }
@@ -144,6 +146,8 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
     public void resetHori() { //gamepad1 b
         if (gamepad1.b) {
             horiSlides.in();
+            timer.reset();
+            timer.startTime();
         }
     }
 }
