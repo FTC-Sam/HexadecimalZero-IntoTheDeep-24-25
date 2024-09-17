@@ -36,8 +36,10 @@ public class Box {
         spin.setPower(-1);
     }
 
-    public void deposit() {
+    public void depositPosition() {
         hinge.setPosition(1);
+    }
+    public void deposit() {
         spin.setPower(-0.5);
     }
 

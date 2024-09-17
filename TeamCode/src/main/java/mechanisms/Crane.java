@@ -50,16 +50,19 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
             case GROUND:
                 take();
                 manualHoriSlides();
-                resetHori();
+                moveHoriSlides();
                 break;
 
             case EXTENSION:
+                manualVertiSlides();
+                setArm();
                 //claw code
 
 
 
         }
-        moveVertiSlides();
+
+        if (horiSlides.isReset() && timer1.seconds() > 0.5) setHeight();
         if (!isVertiManual) vertiSlides.update();
 
     }
@@ -71,6 +74,7 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
     //extension related
 
     public void setHeight() { //gamepad2 up, left, right, down, x
+
         if(gamepad2.dpad_up){
             vertiSlides.setTargetPos(highBucket);
             currentState = CraneStates.EXTENSION;
@@ -92,7 +96,18 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
         }
     }
 
-    public void moveVertiSlides() { //gamepad2 right bumper, left bumper
+    public void setArm() {
+        if((vertiSlides.getTargetPos() == highBucket) || (vertiSlides.getTargetPos() == lowBucket)){
+            box.depositPosition();
+        }
+        if(vertiSlides.getTargetPos() == down) {
+            box.rest();
+        }
+    }
+
+
+
+    public void manualVertiSlides() { //gamepad2 right bumper, left bumper
         if (gamepad2.right_bumper) {
             vertiSlides.manualUp();
             isVertiManual = true;
@@ -105,14 +120,8 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
             isVertiManual = false;
             vertiSlides.setTargetPos(vertiSlides.getCurrentPos());
         }
-        if (horiSlides.isReset() && timer1.seconds() > 0.5) {
-            setHeight();
-        }
     }
 
-    public void armDeposit() {
-        //if (vertiSlides.getCurrentPos() > )
-    }
 
 
 
@@ -121,36 +130,36 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
 
     //---------------------------------------------------------------------------------------------
     //ground related
-    public void manualHoriSlides() { //gamepad1 right bumper, left bumper
-        if (gamepad1.right_bumper) {
+    public void manualHoriSlides() { //gamepad2 right bumper, left bumper
+        if (gamepad2.right_bumper) {
             horiSlides.manualOut();
         }
-        if (gamepad1.left_bumper) {
+        if (gamepad2.left_bumper) {
             horiSlides.manualIn();
         }
     }
-    public void take() { //gamepad1 a, x, y
+    public void take() { //gamepad1 a, x, y, b
         if ((horiSlides.getPosition() >= horiThreshold) && gamepad1.a && timer2.seconds() > 0.3) {
             box.intake();
         }
         else if ((horiSlides.getPosition() >= horiThreshold) && gamepad1.x && timer2.seconds() > 0.3) {
             box.outtake();
         }
-        else if (gamepad1.y) {
-            horiSlides.setPosition(horiThreshold);
-            timer2.reset();
-            timer2.startTime();
-        }
         else {
             box.rest();
         }
     }
 
-    public void resetHori() { //gamepad1 b
+    public void moveHoriSlides() {
         if (gamepad1.b) {
             horiSlides.in();
             timer1.reset();
             timer1.startTime();
+        }
+        else if (gamepad1.y) {
+            horiSlides.setPosition(horiThreshold);
+            timer2.reset();
+            timer2.startTime();
         }
     }
 }

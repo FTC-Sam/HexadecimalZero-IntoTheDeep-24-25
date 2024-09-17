@@ -62,6 +62,10 @@ public class VertiSlides {
     public int getCurrentPos() {
         return slideRight.getCurrentPosition();
     }
+    public int getTargetPos() {
+        return targetPos;
+    }
+
 
     private double returnPowerUp(){
         double currentPos = slideRight.getCurrentPosition();
