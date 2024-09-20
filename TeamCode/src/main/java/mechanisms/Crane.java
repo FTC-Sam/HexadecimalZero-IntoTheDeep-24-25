@@ -10,9 +10,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Crane { //I got rid of hardwareMap variable and wanna try it as a disposable
                      //constructor variable since it's only needed during initialization
     private final Telemetry telemetry;
-    private final Box box;
-    private final HoriSlides horiSlides;
-    private final VertiSlides vertiSlides;
+    public final Box box;
+    public final HoriSlides horiSlides;
+    public final VertiSlides vertiSlides;
     private final Gamepad gamepad1;
     private final Gamepad gamepad2;
     private final int down = 0;
@@ -35,7 +35,7 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
     private final ElapsedTime timer2 = new ElapsedTime();
 
     CraneStates currentState = CraneStates.GROUND;
-    DepositState currentDepositState = DepositState.SAMPLE;
+    public DepositState currentDepositState = DepositState.SAMPLE;
     private final double horiThreshold = 0.1;
     private final int vertiThreshold = 2000;
 
