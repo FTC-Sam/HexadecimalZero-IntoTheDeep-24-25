@@ -21,18 +21,24 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
     private final int lowBar = 500;
     private final int highBar = 1500;
     private final int climbHeight = 2000;
-    private boolean isVertiManual = false;
+    private boolean isVertiManual = false; //stop pid when it's manual
     private enum CraneStates{
         EXTENSION,
         GROUND,
         CLIMB
     }
+    private enum DepositState {
+        SAMPLE,
+        SPECIMEN
+    }
     private final ElapsedTime timer1 = new ElapsedTime();
     private final ElapsedTime timer2 = new ElapsedTime();
 
     CraneStates currentState = CraneStates.GROUND;
+    DepositState currentDepositState = DepositState.SAMPLE;
     private final double horiThreshold = 0.1;
     private final int vertiThreshold = 2000;
+
 
     public Crane(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
 
@@ -48,20 +54,19 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
     public void executeTeleOp() {
         switch (currentState) {
             case GROUND:
-                boxTake();
-                manualHoriSlides();
-                presetHoriSlides();
+                boxTake(); //intake outtake, ensures retraction of box if slides retract
+                manualHoriSlides(); //slide manual
+                presetHoriSlides(); //slide auto
                 break;
 
             case EXTENSION:
-                setArm();
-                //claw code
-
+                setArm(); //set arm preset according to slide auto preset, doesn't happen if slide position is set manually
+                deposit();
 
 
         }
-        manualVertiSlides();
-        presetVertiSlides();
+        manualVertiSlides(); //works any time
+        presetVertiSlides(); //works only if horizontal slides retracted, meaning also not intake and outtake by logic check
         if (!isVertiManual) vertiSlides.update();
     }
 
@@ -76,18 +81,22 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
             if (gamepad2.dpad_up) {
                 vertiSlides.setTargetPos(highBucket);
                 currentState = CraneStates.EXTENSION;
+                currentDepositState = DepositState.SAMPLE;
             }
             if (gamepad2.dpad_left) {
                 vertiSlides.setTargetPos(lowBucket);
                 currentState = CraneStates.EXTENSION;
+                currentDepositState = DepositState.SAMPLE;
             }
             if (gamepad2.dpad_right) {
                 vertiSlides.setTargetPos(highBar);
                 currentState = CraneStates.EXTENSION;
+                currentDepositState = DepositState.SPECIMEN;
             }
             if (gamepad2.x) {
                 vertiSlides.setTargetPos(lowBar);
                 currentState = CraneStates.EXTENSION;
+                currentDepositState = DepositState.SPECIMEN;
             }
             if (gamepad2.dpad_down) {
                 vertiSlides.setTargetPos(down);
@@ -115,11 +124,22 @@ public class Crane { //I got rid of hardwareMap variable and wanna try it as a d
     //extension mode related
 
     public void setArm() {
-        if((vertiSlides.getTargetPos() == highBucket) || (vertiSlides.getTargetPos() == lowBucket)){ //can add and here to threshold arm flipping
+        if (currentDepositState == DepositState.SAMPLE) { //can add and here to threshold arm flipping
             box.depositPosition();
         }
-        if(vertiSlides.getTargetPos() == down) {
+        if (vertiSlides.getTargetPos() == down) {
             box.rest();
+        }
+    }
+
+    public void deposit() {
+        if (gamepad2.a) {
+            if (currentDepositState == DepositState.SAMPLE) {
+                box.deposit();
+            }
+            else {
+                //claw code need edge detector
+            }
         }
     }
 

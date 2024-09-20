@@ -43,7 +43,7 @@ public class Box {
         spin.setPower(-0.5);
     }
 
-    public boolean isReset() {
-        return hinge.getPosition() == 0.6;
+    public boolean isDepositPosition() {
+        return hinge.getPosition() == 1;
     }
 }
