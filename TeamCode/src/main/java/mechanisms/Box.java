@@ -23,16 +23,16 @@ public class Box {
 
     public void rest() {
         spin.setPower(0.1);
-        hinge.setPosition(0.6);
+        hinge.setPosition(0.431);
     }
 
     public void intake() {
-        hinge.setPosition(0);
+        hinge.setPosition(0.559);
         spin.setPower(1);
     }
 
     public void outtake() {
-        hinge.setPosition(0);
+        hinge.setPosition(0.559);
         spin.setPower(-1);
     }
 
